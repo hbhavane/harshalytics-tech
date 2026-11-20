@@ -269,16 +269,155 @@
     }
 
     .close-button:focus-visible,
-    .letter-button:focus-visible {
+    .letter-button:focus-visible,
+    .thank-you-trigger:focus-visible,
+    .thank-you-close:focus-visible,
+    .thank-you-submit:focus-visible {
       outline: 3px solid rgba(255, 223, 231, 0.95);
       outline-offset: 5px;
     }
+
+    .thank-you-trigger {
+      position: fixed;
+      z-index: 8;
+      right: 20px;
+      bottom: max(24px, env(safe-area-inset-bottom));
+      left: 20px;
+      width: fit-content;
+      max-width: calc(100vw - 40px);
+      margin: 0 auto;
+      padding: 14px 22px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, #d77a9b, #9d4f70);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35), 0 0 35px rgba(231, 138, 166, 0.25);
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 500ms ease, transform 500ms ease, box-shadow 250ms ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .thank-you-trigger[hidden] { display: none; }
+    .thank-you-trigger.visible { opacity: 1; transform: translateY(0); }
+    .thank-you-trigger:hover { box-shadow: 0 16px 42px rgba(0, 0, 0, 0.4), 0 0 42px rgba(231, 138, 166, 0.4); }
+
+    .thank-you-dialog {
+      width: min(440px, calc(100vw - 32px));
+      max-height: min(88svh, 720px);
+      padding: 0;
+      overflow: auto;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 24px;
+      color: var(--ink);
+      background: linear-gradient(155deg, #302331, #171019 75%);
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+    }
+
+    .thank-you-dialog::backdrop {
+      background: rgba(11, 8, 13, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .thank-you-content { position: relative; padding: 32px clamp(22px, 6vw, 36px); }
+
+    .thank-you-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 50%;
+      color: white;
+      background: rgba(255, 255, 255, 0.07);
+      cursor: pointer;
+      font-size: 1.35rem;
+    }
+
+    .thank-you-content .eyebrow { margin: 0 40px 10px 0; }
+
+    .thank-you-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 8vw, 2.45rem);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+    }
+
+    .thank-you-copy {
+      margin: 12px 0 22px;
+      color: rgba(255, 250, 247, 0.72);
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.55;
+    }
+
+    .thank-you-form { display: grid; gap: 10px; }
+
+    .thank-you-form label {
+      margin-top: 6px;
+      color: rgba(255, 250, 247, 0.86);
+      font-size: 0.86rem;
+      font-weight: 700;
+    }
+
+    .thank-you-form input,
+    .thank-you-form textarea {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      padding: 12px 14px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, 0.07);
+      font: inherit;
+    }
+
+    .thank-you-form textarea { min-height: 130px; resize: vertical; }
+    .thank-you-form input::placeholder,
+    .thank-you-form textarea::placeholder { color: rgba(255, 250, 247, 0.44); }
+
+    .thank-you-form input:focus-visible,
+    .thank-you-form textarea:focus-visible {
+      outline: 2px solid rgba(255, 223, 231, 0.85);
+      outline-offset: 2px;
+    }
+
+    .thank-you-status {
+      min-height: 1.4em;
+      margin: 2px 0 0;
+      color: rgba(255, 250, 247, 0.78);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .thank-you-status.error { color: #ffc0c0; }
+    .thank-you-status.success { color: #c8f2d2; }
+
+    .thank-you-submit {
+      min-height: 48px;
+      margin-top: 4px;
+      border: 0;
+      border-radius: 999px;
+      color: white;
+      background: linear-gradient(135deg, #d77a9b, #9d4f70);
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .thank-you-submit:disabled { cursor: wait; opacity: 0.72; }
 
     @media (orientation: portrait) and (max-width: 600px) {
       .video-frame {
         height: 100svh;
         max-width: 100vw;
       }
+
+      .thank-you-content { padding-top: 28px; }
     }
 
     @media (orientation: landscape) and (max-height: 700px) {
@@ -295,7 +434,7 @@
       .orb, .petal, .letter-button::before, .letter-button::after {
         animation: none;
       }
-      .welcome, .video-stage, .video-frame, .close-button {
+      .welcome, .video-stage, .video-frame, .close-button, .thank-you-trigger {
         transition-duration: 1ms;
       }
     }
@@ -324,6 +463,27 @@
     <div class="video-frame">
       <canvas id="flowerCanvas" width="540" height="960" aria-label="Animated lily blooming"></canvas>
     </div>
+    <button class="thank-you-trigger" id="thankYouTrigger" type="button" hidden>Say thank you to Harshal 💌</button>
+    <dialog class="thank-you-dialog" id="thankYouDialog" aria-labelledby="thankYouTitle" aria-describedby="thankYouCopy">
+      <div class="thank-you-content">
+        <button class="thank-you-close" id="closeThankYou" type="button" aria-label="Close thank-you form">×</button>
+        <p class="eyebrow">A little note</p>
+        <h2 class="thank-you-title" id="thankYouTitle">Leave a thank-you</h2>
+        <p class="thank-you-copy" id="thankYouCopy">Write a few words to send a little warmth back.</p>
+        <form class="thank-you-form" id="thankYouForm" action="https://api.web3forms.com/submit" method="POST">
+          <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
+          <input type="hidden" name="subject" value="A thank-you note from the lily bouquet page">
+          <input type="hidden" name="from_name" value="Lily Bouquet">
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" style="display: none;">
+          <label for="thankYouName">Your name <span>(optional)</span></label>
+          <input id="thankYouName" name="name" type="text" maxlength="60" autocomplete="name" placeholder="How should I address you?">
+          <label for="thankYouMessage">Your message</label>
+          <textarea id="thankYouMessage" name="message" maxlength="1500" required placeholder="Write your thank-you note here..."></textarea>
+          <p class="thank-you-status" id="thankYouStatus" role="status" aria-live="polite"></p>
+          <button class="thank-you-submit" id="sendThankYou" type="submit">Send thank-you note</button>
+        </form>
+      </div>
+    </dialog>
   </section>
 
   <script>
@@ -331,13 +491,21 @@
     const stage = document.getElementById("videoStage");
     const openButton = document.getElementById("openLetter");
     const closeButton = document.getElementById("closeLetter");
+    const thankYouTrigger = document.getElementById("thankYouTrigger");
+    const thankYouDialog = document.getElementById("thankYouDialog");
+    const closeThankYouButton = document.getElementById("closeThankYou");
+    const thankYouForm = document.getElementById("thankYouForm");
+    const thankYouStatus = document.getElementById("thankYouStatus");
+    const sendThankYouButton = document.getElementById("sendThankYou");
     const canvas = document.getElementById("flowerCanvas");
     const context = canvas.getContext("2d");
     const title = document.getElementById("title");
     const frameCount = 195;
     const frameRate = 15;
+    const thankYouDelay = 14000;
     const frames = [];
     let animationId = 0;
+    let thankYouTimer = 0;
 
     function framePath(index) {
       return `lily_frames/frame_${String(index).padStart(3, "0")}.webp?v=4`;
@@ -357,13 +525,16 @@
     }
 
     function drawFrame(image) {
-      if (!image?.complete) return;
+      if (!image?.complete || !image.naturalWidth) return;
       context.clearRect(0, 0, canvas.width, canvas.height);
       context.drawImage(image, 0, 0, canvas.width, canvas.height);
     }
 
     function startFlowerAnimation() {
       cancelAnimationFrame(animationId);
+      window.clearTimeout(thankYouTimer);
+      thankYouTrigger.hidden = true;
+      thankYouTrigger.classList.remove("visible");
       const startedAt = performance.now();
 
       function tick(now) {
@@ -372,8 +543,14 @@
         const image = frames[frameIndex];
         if (image?.complete) drawFrame(image);
 
-        if (frameIndex < frameCount - 1) {
+        if (frameIndex < frameCount - 1 || !image?.complete) {
           animationId = requestAnimationFrame(tick);
+        } else {
+          thankYouTimer = window.setTimeout(() => {
+            if (!stage.classList.contains("open")) return;
+            thankYouTrigger.hidden = false;
+            requestAnimationFrame(() => thankYouTrigger.classList.add("visible"));
+          }, thankYouDelay);
         }
       }
 
@@ -413,6 +590,10 @@
 
     function closeLetter() {
       cancelAnimationFrame(animationId);
+      window.clearTimeout(thankYouTimer);
+      thankYouTrigger.hidden = true;
+      thankYouTrigger.classList.remove("visible");
+      if (thankYouDialog.open) thankYouDialog.close();
       stage.classList.remove("open");
       stage.setAttribute("aria-hidden", "true");
       window.setTimeout(() => {
@@ -421,10 +602,80 @@
       }, 350);
     }
 
+    function openThankYouDialog() {
+      thankYouForm.reset();
+      thankYouStatus.textContent = "";
+      thankYouStatus.className = "thank-you-status";
+      sendThankYouButton.disabled = false;
+      sendThankYouButton.textContent = "Send thank-you note";
+      thankYouDialog.showModal();
+    }
+
+    async function sendThankYou(event) {
+      event.preventDefault();
+      const formData = new FormData(thankYouForm);
+      const accessKey = String(formData.get("access_key") || "").trim();
+
+      if (!accessKey || accessKey === "YOUR_WEB3FORMS_ACCESS_KEY") {
+        thankYouStatus.className = "thank-you-status error";
+        thankYouStatus.textContent = "Web3Forms needs an access key before notes can be sent.";
+        return;
+      }
+
+      if (!String(formData.get("name") || "").trim()) {
+        formData.set("name", "A visitor");
+      }
+
+      const payload = Object.fromEntries(formData.entries());
+      sendThankYouButton.disabled = true;
+      sendThankYouButton.textContent = "Sending...";
+      thankYouStatus.className = "thank-you-status";
+      thankYouStatus.textContent = "Sending your note...";
+
+      try {
+        const response = await fetch(thankYouForm.action, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || result.body?.message || "Web3Forms did not accept the message.");
+        }
+
+        thankYouStatus.className = "thank-you-status success";
+        thankYouStatus.textContent = "Your note has been sent. Thank you for sharing it 💌";
+        thankYouForm.reset();
+        sendThankYouButton.textContent = "Sent";
+      } catch (error) {
+        console.error("Could not send the thank-you note through Web3Forms.", error);
+        thankYouStatus.className = "thank-you-status error";
+        thankYouStatus.textContent = "Your note could not be sent right now. Please try again.";
+        sendThankYouButton.disabled = false;
+        sendThankYouButton.textContent = "Try again";
+      }
+    }
+
     openButton.addEventListener("click", openLetter);
     closeButton.addEventListener("click", closeLetter);
+    thankYouTrigger.addEventListener("click", openThankYouDialog);
+    closeThankYouButton.addEventListener("click", () => thankYouDialog.close());
+    thankYouDialog.addEventListener("click", (event) => {
+      if (event.target === thankYouDialog) thankYouDialog.close();
+    });
+    thankYouForm.addEventListener("submit", sendThankYou);
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && stage.classList.contains("open")) closeLetter();
+      if (event.key !== "Escape") return;
+      if (thankYouDialog.open) {
+        event.preventDefault();
+        thankYouDialog.close();
+      } else if (stage.classList.contains("open")) {
+        closeLetter();
+      }
     });
 
     makePetals();
