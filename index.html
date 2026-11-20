@@ -269,18 +269,29 @@
       opacity: 0;
       animation: float-message var(--float-duration) ease-in-out var(--float-delay) both;
       will-change: opacity, transform;
+      pointer-events: auto;
+      touch-action: none;
+      user-select: none;
+      cursor: grab;
+    }
+
+    .floating-message.dragging {
+      z-index: 1;
+      animation-play-state: paused;
+      cursor: grabbing;
+      filter: brightness(1.12);
     }
 
     @keyframes float-message {
       0% {
         opacity: 0;
-        transform: translate3d(0, 0, 0) rotate(var(--float-start-rotation));
+        transform: translate3d(var(--drag-x, 0px), var(--drag-y, 0px), 0) rotate(var(--float-start-rotation));
       }
       10% { opacity: 0.94; }
       84% { opacity: 0.84; }
       100% {
         opacity: 0;
-        transform: translate3d(var(--float-drift), -125vh, 0) rotate(var(--float-end-rotation));
+        transform: translate3d(calc(var(--float-drift) + var(--drag-x, 0px)), calc(-125vh + var(--drag-y, 0px)), 0) rotate(var(--float-end-rotation));
       }
     }
 
@@ -591,6 +602,47 @@
       context.drawImage(image, 0, 0, canvas.width, canvas.height);
     }
 
+    function makeMessageDraggable(message) {
+      let drag = null;
+
+      message.addEventListener("pointerdown", (event) => {
+        if (event.isPrimary === false || (event.button !== undefined && event.button !== 0)) return;
+        const bounds = message.getBoundingClientRect();
+        drag = {
+          pointerId: event.pointerId,
+          startX: event.clientX,
+          startY: event.clientY,
+          initialX: Number.parseFloat(message.style.getPropertyValue("--drag-x")) || 0,
+          initialY: Number.parseFloat(message.style.getPropertyValue("--drag-y")) || 0,
+          minX: -bounds.left,
+          maxX: window.innerWidth - bounds.right,
+          minY: -bounds.top,
+          maxY: window.innerHeight - bounds.bottom
+        };
+        message.classList.add("dragging");
+        if (message.setPointerCapture) message.setPointerCapture(event.pointerId);
+        event.preventDefault();
+      });
+
+      message.addEventListener("pointermove", (event) => {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        const offsetX = Math.max(drag.minX, Math.min(drag.maxX, event.clientX - drag.startX));
+        const offsetY = Math.max(drag.minY, Math.min(drag.maxY, event.clientY - drag.startY));
+        message.style.setProperty("--drag-x", `${drag.initialX + offsetX}px`);
+        message.style.setProperty("--drag-y", `${drag.initialY + offsetY}px`);
+      });
+
+      const endDrag = (event) => {
+        if (!drag || event.pointerId !== drag.pointerId) return;
+        drag = null;
+        message.classList.remove("dragging");
+      };
+
+      message.addEventListener("pointerup", endDrag);
+      message.addEventListener("pointercancel", endDrag);
+      message.addEventListener("animationend", () => message.remove());
+    }
+
     function startFloatingMessages() {
       floatingMessages.replaceChildren();
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -608,6 +660,7 @@
         message.style.setProperty("--float-drift", `${Math.round(-45 + Math.random() * 90)}px`);
         message.style.setProperty("--float-start-rotation", `${Math.round(-5 + Math.random() * 10)}deg`);
         message.style.setProperty("--float-end-rotation", `${Math.round(-8 + Math.random() * 16)}deg`);
+        makeMessageDraggable(message);
         floatingMessages.appendChild(message);
       });
     }
