@@ -53,7 +53,7 @@ To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
 
 The web page reveals a responsive, five-flower lily bouquet over its animated background. The script can also generate a vertical MP4.
 
-After the final flower frame, the page waits 14 seconds before showing a thank-you button. To email notes submitted through the form, create a Web3Forms access key for the inbox that should receive them, then replace `YOUR_WEB3FORMS_ACCESS_KEY` in `index.html`. The key is designed for public client-side forms; without it, submissions remain disabled with an explanatory message.
+The thank-you button appears 14 seconds after the letter is opened. To email notes submitted through the form, create a Web3Forms access key for the inbox that should receive them, then replace `YOUR_WEB3FORMS_ACCESS_KEY` in `index.html`. The key is designed for public client-side forms; without it, submissions remain disabled with an explanatory message.
 
 ## 💗 About
 

@@ -349,13 +349,6 @@
       letter-spacing: -0.035em;
     }
 
-    .thank-you-copy {
-      margin: 12px 0 22px;
-      color: rgba(255, 250, 247, 0.72);
-      font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.55;
-    }
-
     .thank-you-form { display: grid; gap: 10px; }
 
     .thank-you-form label {
@@ -464,19 +457,16 @@
       <canvas id="flowerCanvas" width="540" height="960" aria-label="Animated lily blooming"></canvas>
     </div>
     <button class="thank-you-trigger" id="thankYouTrigger" type="button" hidden>Say thank you to Harshal 💌</button>
-    <dialog class="thank-you-dialog" id="thankYouDialog" aria-labelledby="thankYouTitle" aria-describedby="thankYouCopy">
+    <dialog class="thank-you-dialog" id="thankYouDialog" aria-labelledby="thankYouTitle">
       <div class="thank-you-content">
         <button class="thank-you-close" id="closeThankYou" type="button" aria-label="Close thank-you form">×</button>
         <p class="eyebrow">A little note</p>
         <h2 class="thank-you-title" id="thankYouTitle">Leave a thank-you</h2>
-        <p class="thank-you-copy" id="thankYouCopy">Write a few words to send a little warmth back.</p>
         <form class="thank-you-form" id="thankYouForm" action="https://api.web3forms.com/submit" method="POST">
           <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY">
           <input type="hidden" name="subject" value="A thank-you note from the lily bouquet page">
           <input type="hidden" name="from_name" value="Lily Bouquet">
           <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" aria-hidden="true" style="display: none;">
-          <label for="thankYouName">Your name <span>(optional)</span></label>
-          <input id="thankYouName" name="name" type="text" maxlength="60" autocomplete="name" placeholder="How should I address you?">
           <label for="thankYouMessage">Your message</label>
           <textarea id="thankYouMessage" name="message" maxlength="1500" required placeholder="Write your thank-you note here..."></textarea>
           <p class="thank-you-status" id="thankYouStatus" role="status" aria-live="polite"></p>
@@ -545,12 +535,6 @@
 
         if (frameIndex < frameCount - 1 || !image?.complete) {
           animationId = requestAnimationFrame(tick);
-        } else {
-          thankYouTimer = window.setTimeout(() => {
-            if (!stage.classList.contains("open")) return;
-            thankYouTrigger.hidden = false;
-            requestAnimationFrame(() => thankYouTrigger.classList.add("visible"));
-          }, thankYouDelay);
         }
       }
 
@@ -585,6 +569,11 @@
       stage.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
       startFlowerAnimation();
+      thankYouTimer = window.setTimeout(() => {
+        if (!stage.classList.contains("open")) return;
+        thankYouTrigger.hidden = false;
+        requestAnimationFrame(() => thankYouTrigger.classList.add("visible"));
+      }, thankYouDelay);
       closeButton.focus({ preventScroll: true });
     }
 
@@ -620,10 +609,6 @@
         thankYouStatus.className = "thank-you-status error";
         thankYouStatus.textContent = "Web3Forms needs an access key before notes can be sent.";
         return;
-      }
-
-      if (!String(formData.get("name") || "").trim()) {
-        formData.set("name", "A visitor");
       }
 
       const payload = Object.fromEntries(formData.entries());
