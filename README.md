@@ -21,24 +21,37 @@ A procedural 3D botanical animation of a bouquet of Oriental lilies, created wit
 
 ```text
 lily-animation-python/
-└── generate_lily_animation.py
+├── generate_lily_animation.py
+├── index.html
+└── lily_frames/
+    └── frame_001.webp ... frame_195.webp
 ```
 
 ## 🚀 Getting Started
 
 1. Download or clone this repository.
 2. Install the Python dependencies required by the script.
-3. Run the script:
+3. Generate or refresh the transparent web animation frames:
 
 ```bash
-python3 generate_lily_animation.py
+python3 generate_lily_animation.py --web-frames
 ```
 
-**Note:** Check the imports at the top of the script and install any required dependencies before running it. The script may also require additional system tools.
+4. Serve the page locally:
+
+```bash
+python3 -m http.server 8000
+```
+
+Open `http://localhost:8000` in a browser. The page uses transparent WebP frames, so it can layer the bouquet over its animated petal background without a video player.
+
+To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
+
+**Note:** Check the imports at the top of the script and install any required dependencies before running it. MP4 rendering also requires FFmpeg.
 
 ## 🎥 Output
 
-The script generates a vertical animated lily video suitable for showcasing in short-form content.
+The web page reveals a responsive, five-flower lily bouquet over its animated background. The script can also generate a vertical MP4.
 
 ## 💗 About
 

@@ -594,8 +594,7 @@ def build_lily_bouquet_scene():
     Construct the complete 3D botanical bouquet of Oriental Lilies:
     - 3 main arching stems + 5 branching pedicels
     - 15 whorled/alternate lanceolate leaves
-    - 3 blooming lilies (Hero Center-Right, Hero Upper-Left, Trumpet Lower-Left)
-    - 2 botanical lily buds (Top Crown & Right Flank)
+    - 5 blooming lilies arranged as a full bouquet
     All timed for a seamless 13-second progressive construction & reveal.
     """
     elements = []
@@ -675,7 +674,7 @@ def build_lily_bouquet_scene():
             surf_t0=1.35 + dly, surf_t1=3.15 + dly
         ))
 
-    # 4. Three Blooming Oriental Lilies
+    # 4. Five Blooming Oriental Lilies
     flowers_spec = [
         # Flower 1: Hero Center-Right (Full Stargazer Oriental Lily)
         {
@@ -716,6 +715,32 @@ def build_lily_bouquet_scene():
             "stamen_t0": 7.6, "stamen_t1": 9.9,
             "seed_base": 300
         },
+        # Flower 4: Crown Bloom
+        {
+            "center": np.array([0.08, 1.60, -0.02], dtype=np.float32),
+            "dir": np.array([-0.12, 0.62, 0.78], dtype=np.float32),
+            "scale": 0.64,
+            "openness": 0.90,
+            "variant": "soft_rose",
+            "rot_offset": 0.48,
+            "wire_t0": 3.0, "wire_t1": 5.8,
+            "surf_t0": 5.2, "surf_t1": 8.8,
+            "stamen_t0": 7.8, "stamen_t1": 10.0,
+            "seed_base": 400
+        },
+        # Flower 5: Right-Flank Bloom
+        {
+            "center": np.array([0.50, 1.16, -0.08], dtype=np.float32),
+            "dir": np.array([0.34, 0.54, 0.78], dtype=np.float32),
+            "scale": 0.62,
+            "openness": 0.86,
+            "variant": "blush_ivory",
+            "rot_offset": -0.52,
+            "wire_t0": 3.2, "wire_t1": 6.0,
+            "surf_t0": 5.4, "surf_t1": 9.0,
+            "stamen_t0": 8.0, "stamen_t1": 10.2,
+            "seed_base": 500
+        },
     ]
 
     for f in flowers_spec:
@@ -745,21 +770,6 @@ def build_lily_bouquet_scene():
             wire_t0=f["stamen_t0"], wire_t1=f["stamen_t0"] + 1.3,
             surf_t0=f["stamen_t0"] + 0.4, surf_t1=f["stamen_t1"]
         ))
-
-    # 5. Two Lily Buds (Crown & Right Flank)
-    bud1_basis = build_basis_from_dir(np.array([0.06, 0.95, 0.16], dtype=np.float32))
-    elements.append(generate_lily_bud(
-        center=np.array([0.08, 1.60, -0.02], dtype=np.float32),
-        basis=bud1_basis, scale=0.80, is_cracking=True,
-        wire_t0=2.5, wire_t1=4.8, surf_t0=4.5, surf_t1=7.5
-    ))
-
-    bud2_basis = build_basis_from_dir(np.array([0.36, 0.90, 0.12], dtype=np.float32))
-    elements.append(generate_lily_bud(
-        center=np.array([0.50, 1.16, -0.08], dtype=np.float32),
-        basis=bud2_basis, scale=0.74, is_cracking=False,
-        wire_t0=2.7, wire_t1=5.0, surf_t0=4.7, surf_t1=7.7
-    ))
 
     return elements
 
@@ -852,7 +862,7 @@ def init_worker():
     SCENE_ELEMENTS = build_lily_bouquet_scene()
 
 
-def render_frame(frame_idx, total_frames=TOTAL_FRAMES):
+def render_frame(frame_idx, total_frames=TOTAL_FRAMES, include_hud=True):
     """Render frame `frame_idx` at 1080x1920 resolution and return BGR uint8 image."""
     global SCENE_ELEMENTS
     if SCENE_ELEMENTS is None:
@@ -1092,9 +1102,14 @@ def render_frame(frame_idx, total_frames=TOTAL_FRAMES):
     bloom = cv2.GaussianBlur(bright, (0, 0), sigmaX=18.0)
     canvas = cv2.addWeighted(canvas, 1.0, bloom, 0.50, 0.0)
 
-    draw_botanical_hud(canvas, t)
+    if include_hud:
+        draw_botanical_hud(canvas, t)
 
     return canvas
+
+
+def render_bouquet_frame(frame_idx):
+    return render_frame(frame_idx, include_hud=False)
 
 
 def draw_botanical_hud(canvas, t):
@@ -1158,6 +1173,63 @@ def draw_botanical_hud(canvas, t):
 # ============================================================================
 # CLI ENTRY POINT (TEST FRAMES OR FULL MP4 RENDER)
 # ============================================================================
+def render_transparent_frames(out_dir):
+    """Render the bouquet as transparent WebP frames for the responsive web page."""
+    os.makedirs(out_dir, exist_ok=True)
+    background = cv2.resize(STUDIO_BG, (540, 960), interpolation=cv2.INTER_AREA)
+    frame_indices = range(0, TOTAL_FRAMES, 2)
+
+    for filename in os.listdir(out_dir):
+        if filename.startswith("frame_") and filename.endswith(".webp"):
+            os.remove(os.path.join(out_dir, filename))
+
+    print(f"Rendering {len(frame_indices)} transparent bouquet frames...")
+    num_workers = min(8, os.cpu_count() or 4)
+    with mp.Pool(processes=num_workers, initializer=init_worker) as pool:
+        for frame_number, frame in enumerate(pool.imap(render_bouquet_frame, frame_indices, chunksize=2), 1):
+            frame = cv2.resize(frame, (540, 960), interpolation=cv2.INTER_AREA)
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+            hue, saturation, value = cv2.split(hsv)
+            background_diff = np.max(cv2.absdiff(frame, background), axis=2)
+
+            green = (hue >= 25) & (hue <= 100) & (saturation >= 30) & (value >= 24)
+            pink = ((hue >= 145) | (hue <= 7)) & (saturation >= 28) & (value >= 32)
+            anthers = (hue >= 8) & (hue <= 17) & (saturation >= 75) & (value >= 60)
+            petals = (value >= 118) & (saturation <= 95)
+            mask = (green | pink | anthers | petals) & (background_diff >= 9)
+
+            count, labels, stats, _ = cv2.connectedComponentsWithStats(mask.astype(np.uint8), 8)
+            clean_mask = np.zeros_like(mask)
+            for component in range(1, count):
+                if stats[component, cv2.CC_STAT_AREA] >= 80:
+                    clean_mask[labels == component] = True
+
+            alpha = cv2.GaussianBlur(clean_mask.astype(np.float32), (0, 0), 0.65)
+            alpha_3d = alpha[:, :, None]
+            source = frame.astype(np.float32)
+            matte = background.astype(np.float32)
+            foreground = np.where(
+                alpha_3d > 0.02,
+                (source - matte * (1.0 - alpha_3d)) / np.maximum(alpha_3d, 0.02),
+                0,
+            )
+            frame_bgra = np.dstack((
+                np.clip(foreground, 0, 255).astype(np.uint8),
+                (alpha * 255).astype(np.uint8),
+            ))
+            ok, encoded = cv2.imencode(
+                ".webp", frame_bgra, [cv2.IMWRITE_WEBP_QUALITY, 90]
+            )
+            if not ok:
+                raise RuntimeError(f"Could not encode transparent frame {frame_number}")
+            out_path = os.path.join(out_dir, f"frame_{frame_number:03d}.webp")
+            with open(out_path, "wb") as frame_file:
+                frame_file.write(encoded.tobytes())
+
+            if frame_number % 30 == 0 or frame_number == len(frame_indices):
+                print(f"  [{frame_number:3d}/{len(frame_indices)}] transparent frames")
+
+
 def render_preview_keyframes(out_dir):
     os.makedirs(out_dir, exist_ok=True)
     init_worker()
@@ -1212,7 +1284,9 @@ def render_full_video(output_mp4):
 
 if __name__ == "__main__":
     out_folder = os.path.dirname(os.path.abspath(__file__))
-    if "--preview" in sys.argv:
+    if "--web-frames" in sys.argv:
+        render_transparent_frames(os.path.join(out_folder, "lily_frames"))
+    elif "--preview" in sys.argv:
         render_preview_keyframes(out_folder)
     else:
         video_path = os.path.join(out_folder, "lily_3d_botanical_animation.mp4")
