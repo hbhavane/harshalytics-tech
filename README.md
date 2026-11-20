@@ -53,7 +53,7 @@ To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
 
 The web page reveals a responsive, five-flower lily bouquet over its animated background. The script can also generate a vertical MP4.
 
-The thank-you button appears 14 seconds after the letter is opened. To email notes submitted through the form, create a Web3Forms access key for the inbox that should receive them, then replace `YOUR_WEB3FORMS_ACCESS_KEY` in `index.html`. The key is designed for public client-side forms; without it, submissions remain disabled with an explanatory message.
+The thank-you button appears 14 seconds after the letter is opened. Thank-you notes are sent to the configured inbox through Web3Forms. Its public client-side access key is stored in the form's hidden `access_key` field in `index.html`; replace that value if the destination inbox changes.
 
 ## 💗 About
 
