@@ -51,7 +51,7 @@ To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
 
 ## 🎥 Output
 
-The web page reveals a responsive, five-flower lily bouquet over its animated background. The script can also generate a vertical MP4.
+The web page reveals a responsive, five-flower lily bouquet over its animated background, followed by the supplied floating messages. The script can also generate a vertical MP4.
 
 The thank-you button appears 14 seconds after the letter is opened. Thank-you notes are sent to the configured inbox through Web3Forms. Its public client-side access key is stored in the form's hidden `access_key` field in `index.html`; replace that value if the destination inbox changes.
 
