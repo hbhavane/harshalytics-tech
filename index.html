@@ -225,14 +225,21 @@
     }
 
     .unlock-button {
+      display: grid;
+      width: 54px;
       min-height: 50px;
+      justify-self: center;
+      place-items: center;
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 999px;
       color: white;
       background: linear-gradient(135deg, #d77a9b, #9d4f70);
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+      padding: 0;
       font: inherit;
+      font-size: 1.55rem;
       font-weight: 700;
+      line-height: 1;
       cursor: pointer;
       transition: transform 200ms ease, box-shadow 200ms ease;
       -webkit-tap-highlight-color: transparent;
@@ -630,7 +637,7 @@
         <p class="unlock-hint">Hint: “Knock Knock ..✊ It's Lettuce..!”</p>
         <input id="unlockPassword" name="password" type="password" aria-label="Password" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your password">
         <p class="unlock-status" id="unlockStatus" role="status" aria-live="polite"></p>
-        <button class="unlock-button" type="submit">Unlock the flower</button>
+        <button class="unlock-button" type="submit" aria-label="Continue" title="Continue">→</button>
       </form>
     </section>
   </main>
