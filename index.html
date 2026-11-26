@@ -207,14 +207,31 @@
     }
 
     .unlock-hint {
-      margin: 2px 0;
-      color: rgba(255, 250, 247, 0.74);
+      margin: 0;
+      padding: 13px 15px;
+      border: 1px solid rgba(255, 223, 231, 0.16);
+      border-radius: 18px;
+      color: rgba(255, 250, 247, 0.82);
+      background: rgba(255, 255, 255, 0.045);
       font-family: Georgia, "Times New Roman", serif;
-      font-size: 0.98rem;
-      font-style: italic;
+      font-size: clamp(0.86rem, 2.5vw, 0.98rem);
       line-height: 1.5;
       text-align: center;
     }
+
+    .unlock-hint-title {
+      margin: 0 0 7px;
+      color: var(--soft-pink);
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+      font-size: 0.68rem;
+      font-style: normal;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .unlock-hint-line { margin: 3px 0; }
+    .unlock-hint-line strong { color: #ffdfe7; }
 
     .unlock-status {
       min-height: 1.4em;
@@ -251,6 +268,93 @@
     }
 
     .unlock-button:active { transform: scale(0.98); }
+
+    .unlock-button:disabled { cursor: wait; opacity: 0.72; }
+
+    .celebration {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(23, 16, 25, 0.74);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 240ms ease, visibility 240ms ease;
+    }
+
+    .celebration.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .celebration-yes {
+      position: relative;
+      z-index: 0;
+      margin: 0;
+      color: #fff0f5;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(5rem, 24vw, 12rem);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 28px rgba(255, 137, 177, 0.8), 0 12px 40px rgba(0, 0, 0, 0.35);
+      transform: scale(0.3);
+      opacity: 0;
+    }
+
+    .celebration.visible .celebration-yes {
+      animation: yes-pop 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes yes-pop {
+      0% { opacity: 0; transform: scale(0.2) rotate(-8deg); }
+      65% { opacity: 1; transform: scale(1.12) rotate(3deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0); }
+    }
+
+    .celebration-hearts {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .celebration-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-size: clamp(1.8rem, 6vw, 3.8rem);
+      opacity: 0;
+    }
+
+    .celebration.visible .celebration-heart {
+      animation: heart-burst 1.75s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0ms) both;
+    }
+
+    .celebration-heart:nth-child(1) { --x: -150px; --y: -115px; --rotation: -18deg; }
+    .celebration-heart:nth-child(2) { --x: -80px; --y: -165px; --rotation: 12deg; --delay: 80ms; }
+    .celebration-heart:nth-child(3) { --x: 25px; --y: -175px; --rotation: -10deg; --delay: 140ms; }
+    .celebration-heart:nth-child(4) { --x: 125px; --y: -125px; --rotation: 16deg; --delay: 40ms; }
+    .celebration-heart:nth-child(5) { --x: 165px; --y: -25px; --rotation: -14deg; --delay: 180ms; }
+    .celebration-heart:nth-child(6) { --x: 130px; --y: 95px; --rotation: 12deg; --delay: 100ms; }
+    .celebration-heart:nth-child(7) { --x: 45px; --y: 155px; --rotation: -16deg; --delay: 220ms; }
+    .celebration-heart:nth-child(8) { --x: -65px; --y: 160px; --rotation: 10deg; --delay: 60ms; }
+    .celebration-heart:nth-child(9) { --x: -150px; --y: 100px; --rotation: -12deg; --delay: 160ms; }
+    .celebration-heart:nth-child(10) { --x: -175px; --y: 0; --rotation: 18deg; --delay: 120ms; }
+    .celebration-heart:nth-child(11) { --x: -30px; --y: -85px; --rotation: 14deg; --delay: 200ms; }
+    .celebration-heart:nth-child(12) { --x: 75px; --y: 35px; --rotation: -10deg; --delay: 240ms; }
+
+    @keyframes heart-burst {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.25); }
+      14% { opacity: 1; }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.45) rotate(var(--rotation));
+      }
+    }
 
     .music-control {
       position: fixed;
@@ -613,6 +717,13 @@
       .welcome, .video-stage, .video-frame, .close-button, .thank-you-trigger, .unlock-button {
         transition-duration: 1ms;
       }
+      .celebration { transition-duration: 1ms; }
+      .celebration.visible .celebration-yes,
+      .celebration.visible .celebration-heart {
+        animation: none;
+        opacity: 1;
+        transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(1.1);
+      }
       .floating-messages { display: none; }
       .music-control.is-playing .music-note {
         animation: none;
@@ -634,13 +745,36 @@
       <p class="subtitle">A flower blooms, a moment opens, and a little love finds its way to you.</p>
       <div class="letter-emblem" aria-hidden="true"><span class="letter-emoji">💌</span></div>
       <form class="unlock-form" id="unlockForm">
-        <p class="unlock-hint">Hint: “Knock Knock ..✊ It's Lettuce..!”</p>
+        <div class="unlock-hint">
+          <p class="unlock-hint-title">A little hint</p>
+          <p class="unlock-hint-line"><strong>You:</strong> Knock Knock ..✊ It's Lettuce..!</p>
+          <p class="unlock-hint-line"><strong>Me:</strong> Lettuce who?</p>
+          <p class="unlock-hint-line"><strong>You:</strong> ....</p>
+        </div>
         <input id="unlockPassword" name="password" type="password" aria-label="Password" required autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your password">
         <p class="unlock-status" id="unlockStatus" role="status" aria-live="polite"></p>
-        <button class="unlock-button" type="submit" aria-label="Continue" title="Continue">→</button>
+        <button class="unlock-button" id="unlockButton" type="submit" aria-label="Continue" title="Continue">→</button>
       </form>
     </section>
   </main>
+
+  <div class="celebration" id="celebration" role="status" aria-live="polite" aria-hidden="true">
+    <div class="celebration-hearts" aria-hidden="true">
+      <span class="celebration-heart">💖</span>
+      <span class="celebration-heart">💗</span>
+      <span class="celebration-heart">💕</span>
+      <span class="celebration-heart">💘</span>
+      <span class="celebration-heart">💝</span>
+      <span class="celebration-heart">💖</span>
+      <span class="celebration-heart">💗</span>
+      <span class="celebration-heart">💕</span>
+      <span class="celebration-heart">💘</span>
+      <span class="celebration-heart">💝</span>
+      <span class="celebration-heart">❤️</span>
+      <span class="celebration-heart">💞</span>
+    </div>
+    <p class="celebration-yes">YES!</p>
+  </div>
 
   <audio id="backgroundMusic" src="assets/Sukh-Kalale.mp3" preload="auto" loop></audio>
   <button class="music-control" id="musicControl" type="button" aria-label="Play background music" aria-pressed="false">
@@ -690,6 +824,8 @@
     const unlockForm = document.getElementById("unlockForm");
     const unlockPassword = document.getElementById("unlockPassword");
     const unlockStatus = document.getElementById("unlockStatus");
+    const unlockButton = document.getElementById("unlockButton");
+    const celebration = document.getElementById("celebration");
     const backgroundMusic = document.getElementById("backgroundMusic");
     const musicControl = document.getElementById("musicControl");
     const musicStatus = document.getElementById("musicStatus");
@@ -707,6 +843,7 @@
     const frameRate = 15;
     const thankYouDelay = 14000;
     const unlockPhrase = "let us go out on a date";
+    const celebrationDuration = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 500 : 2100;
     const floatingMessageLines = [
       "Apko kya pasand hai..Insaan🧍‍♂️ Ya Bandar 🐒",
       "I never sung a song to someone bhhaaiii",
@@ -735,6 +872,7 @@
     const frames = [];
     let animationId = 0;
     let thankYouTimer = 0;
+    let celebrationTimer = 0;
 
     function framePath(index) {
       return `lily_frames/frame_${String(index).padStart(3, "0")}.webp?v=4`;
@@ -778,7 +916,17 @@
 
       unlockStatus.textContent = "";
       unlockForm.reset();
-      openLetter();
+      unlockPassword.disabled = true;
+      unlockButton.disabled = true;
+      celebration.classList.add("visible");
+      celebration.setAttribute("aria-hidden", "false");
+      celebrationTimer = window.setTimeout(() => {
+        celebration.classList.remove("visible");
+        celebration.setAttribute("aria-hidden", "true");
+        unlockPassword.disabled = false;
+        unlockButton.disabled = false;
+        openLetter();
+      }, celebrationDuration);
     }
 
     let musicManuallyControlled = false;

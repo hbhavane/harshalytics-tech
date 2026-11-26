@@ -49,7 +49,7 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000` in a browser. The page uses transparent WebP frames, so it can layer the bouquet over its animated petal background without a video player.
 
-The welcome screen asks for the secret phrase before revealing the flower animation. The page attempts to autoplay the looping MP3; browsers that block autoplay start it after the first page interaction. Use the gramophone button to pause or resume playback. Because the password check runs in the page itself, it is a playful gate, not security.
+The welcome screen shows a centered knock-knock hint and asks for the secret phrase. A correct entry plays a brief “YES!” heart-burst before revealing the flower animation. The page attempts to autoplay the looping MP3; browsers that block autoplay start it after the first page interaction. Use the gramophone button to pause or resume playback. Because the password check runs in the page itself, it is a playful gate, not security.
 
 To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
 
