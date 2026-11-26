@@ -8,6 +8,8 @@ A procedural 3D botanical animation of a bouquet of Oriental lilies, created wit
 - 🌿 Detailed petals, stems, leaves, stamens, and pistils
 - 🎬 Animated flower construction and reveal
 - 📱 Vertical 1080 × 1920 video format
+- 🔒 Password-gated flower reveal with a personal hint
+- 🎶 Looping background music with a gramophone play/pause control
 - 🐍 Python-based animation generation
 
 ## 🛠️ Technologies
@@ -23,6 +25,8 @@ A procedural 3D botanical animation of a bouquet of Oriental lilies, created wit
 lily-animation-python/
 ├── generate_lily_animation.py
 ├── index.html
+├── assets/
+│   └── Sukh-Kalale.mp3
 └── lily_frames/
     └── frame_001.webp ... frame_195.webp
 ```
@@ -44,6 +48,8 @@ python3 -m http.server 8000
 ```
 
 Open `http://localhost:8000` in a browser. The page uses transparent WebP frames, so it can layer the bouquet over its animated petal background without a video player.
+
+The welcome screen asks for the secret phrase before revealing the flower animation. The page attempts to autoplay the looping MP3; browsers that block autoplay start it after the first page interaction. Use the gramophone button to pause or resume playback. Because the password check runs in the page itself, it is a playful gate, not security.
 
 To render the standalone MP4 instead, run `python3 generate_lily_animation.py`.
 
